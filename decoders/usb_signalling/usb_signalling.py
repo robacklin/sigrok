@@ -74,6 +74,13 @@ class Decoder(srd.Decoder):
         self.out_proto = self.add(srd.OUTPUT_PROTO, 'usb_signalling')
         self.out_ann = self.add(srd.OUTPUT_ANN, 'usb_signalling')
 
+        if self.options['signalling'] == 'low-speed':
+            bitrate = 1500000 # 1.5Mb/s (+/- 1.5%)
+        elif self.options['signalling'] == 'full-speed':
+            bitrate = 12000000 # 12Mb/s (+/- 0.25%)
+        self.samples_per_bit = self.samplerate / bitrate
+        self.settle = None
+
     def report(self):
         pass
 
@@ -85,9 +92,19 @@ class Decoder(srd.Decoder):
             # last change in the D+/D- lines.
             self.scount += 1
 
-            # Ignore identical samples early on (for performance reasons).
-            if self.oldpins == pins:
+            # The edges of dp/dm channels may be slightly misaligned.
+            # This logic delays the sampling of pin states by
+            # 1/3 of bit time from the first transition.
+            if self.settle is None:
+                if self.oldpins != pins:
+                    self.settle = self.samples_per_bit / 3
                 continue
+            else:
+                self.settle -= 1
+                if self.settle > 0:
+                    continue
+
+            self.settle = None
             self.oldpins, (dp, dm) = pins, pins
 
             if self.options['signalling'] == 'low-speed':
@@ -111,11 +128,7 @@ class Decoder(srd.Decoder):
 
             # How many bits since the last transition?
             if self.packet != '' or self.sym != 'J':
-                if self.options['signalling'] == 'low-speed':
-                    bitrate = 1500000 # 1.5Mb/s (+/- 1.5%)
-                elif self.options['signalling'] == 'full-speed':
-                    bitrate = 12000000 # 12Mb/s (+/- 0.25%)
-                bitcount = int((self.scount - 1) * bitrate / self.samplerate)
+                bitcount = int(round(float(self.scount) / self.samples_per_bit)) - 1
             else:
                 bitcount = 0
 
