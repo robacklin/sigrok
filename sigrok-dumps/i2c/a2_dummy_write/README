@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------------
+Dummy I2C writes
+-------------------------------------------------------------------------------
+
+This is an example capture of some dummy I2C traffic, where the master writes
+to a slave (an RTC) at address 0x51 (or 0x2a, if the read/write bit is
+included) in an infinite loop. The slave does not respond.
+
+
+Logic analyzer setup
+--------------------
+
+The logic analyzer used was a ChronoVu LA8 (at 1MHz):
+
+  Probe       RTC chip pin
+  ------------------------
+  0 (green)   SCL
+  1 (orange)  SDA
+
+
+Data
+----
+
+This is what the decoded data should look like:
+
+ - S Wr:0xa2 A 0x55 A 0x66 A P
+
+ - The abbreviations used above: S = Start, Wr = Write, A = ACK, P = Stop
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=1mhz --samples 8388608 \
+             -p '1=SCL,2=SDA' -o a2_dummy_write.sr
+

@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------------
+TrekStor eBook Reader 3.0 I2C
+-------------------------------------------------------------------------------
+
+This is a set of example captures of the I2C traffic on a TrekStor eBook
+Reader 3.0 EBR30-a (Weltbild + Hugendubel Edition) device.
+
+For details on the device see:
+
+  http://randomprojects.org/wiki/TrekStor_eBook_Reader_3.0_EBR30-a_(Weltbild_%2B_Hugendubel_Edition)
+
+There are three chips which are connected to the main CPU's SCL/SDA pins:
+
+ - Battery management chip: X-Powers AXP199
+
+ - RTC chip: Hec Semiconductor H8563S
+
+ - Digital Thermal Orientation Sensor (DTOS): MEMSIC MXC6225XU
+
+
+trekstor_ebr30_a_i2c_0x15.sr
+----------------------------
+
+The logic analyzer used was a ChronoVu LA8 (at 4MHz):
+
+  Probe       I2C pin
+  -------------------
+  1 (orange)  SCL
+  7 (yellow)  SDA
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=4mhz --samples 8388608 \
+             -p '2=SCL,8=SDA' -o trekstor_ebr30_a_i2c_0x15.sr
+
+
+trekstor_ebr30_a_i2c_30s.sr and trekstor_ebr30_a_i2c_120s.sr
+------------------------------------------------------------
+
+This is a 30s/120s dump of the I2C traffic while the device was attached
+to USB.
+
+The logic analyzer used was a Saleae Logic (at 4MHz):
+
+  Probe       I2C pin
+  -------------------
+  4 (orange)  SCL
+  6 (green)   SDA
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=4mhz --time <time>
+             -p '4=SCL,6=SDA' -o <filename.sr>
+
+(<time> was 30s or 120s)
+

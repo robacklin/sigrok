@@ -1,0 +1,107 @@
+-------------------------------------------------------------------------------
+Macronix MX25L1605D (SPI flash chip)
+-------------------------------------------------------------------------------
+
+This is a set of example captures of a Macronix MX25L1605D (MX25L1605DPI-12G)
+SPI flash chip (16MBit == 2Mbyte; NOR flash) that is probed, being written to,
+read, or erased.
+
+The SPI programmer hardware used is openbiosprog-spi, see
+
+  http://randomprojects.org/wiki/Openbiosprog-spi
+
+The software used for programming it is flashrom, see
+
+  http://flashrom.org/FT2232SPI_Programmer
+
+
+Logic analyzer setup
+--------------------
+
+The logic analyzer used was a ChronoVu LA8 (at 25MHz):
+
+  Probe       MX25L1605D pin
+  --------------------------
+  0 (green)   CS#
+  1 (orange)  SO/SIO1 (a.k.a MISO)
+  2 (white)   SCLK
+  3 (red)     SI/SIO0 (a.k.a MOSI)
+  4 (gray)    WP#/ACC
+  5 (brown)   HOLD#
+
+
+Probing
+-------
+
+The flashrom command line used was:
+
+  flashrom -p ft2232_spi:type=2232H,port=A
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=25mhz --samples 8388608 \
+             -p '1=CS#,2=MISO,3=SCLK,4=MOSI,5=WP#,6=HOLD#' \
+             --wait-trigger --triggers 3=1 \
+             -o mx25l1605d_probe.sr
+
+The capturing starts when the SCLK signal is high for the first time
+(it's low per default). We capture as many samples as fit into the 8MByte
+buffer of the logic analyzer.
+
+The capture might not contain the complete flashrom chip detection sequence.
+
+
+Writing
+-------
+
+The flashrom command line used was:
+
+  flashrom -p ft2232_spi:type=2232H,port=A -w filename
+
+where 'filename' is a 2MByte file filled with lots of consecutive "HelloWorld"
+ASCII character strings.
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=25mhz --samples 8388608 \
+             -p '1=CS#,2=MISO,3=SCLK,4=MOSI,5=WP#,6=HOLD#' \
+             -o mx25l1605d_write.sr
+
+The capture is only partial, it contains a small part of the write process
+(it does not contain the chip identification, chip erase, etc. which comes
+before the actual write parts; it also does not contain anything after that,
+the flashrom command took quite a bit longer than what the capture shows).
+
+
+Reading
+-------
+
+The flashrom command line used was:
+
+  flashrom -p ft2232_spi:type=2232H,port=A -r dump.dd
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=25mhz --samples 8388608 \
+             -p '1=CS#,2=MISO,3=SCLK,4=MOSI,5=WP#,6=HOLD#' \
+             -o mx25l1605d_read.sr
+
+The capture only contains a small part of the read procedure. The data in
+the chip consists of consecutive "HelloWorld" ASCII strings.
+
+
+Erasing
+-------
+
+The flashrom command line used was:
+
+  flashrom -p ft2232_spi:type=2232H,port=A -E
+
+The sigrok command line used was:
+
+  sigrok-cli -d 0:samplerate=25mhz --samples 8388608 \
+             -p '1=CS#,2=MISO,3=SCLK,4=MOSI,5=WP#,6=HOLD#' \
+             -o mx25l1605d_erase.sr
+
+The capture does not contain the full erase process, only a small part of it.
+
