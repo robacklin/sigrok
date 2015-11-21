@@ -1,0 +1,83 @@
+-------------------------------------------------------------------------------
+README
+-------------------------------------------------------------------------------
+
+The sigrok project aims at creating a portable, cross-platform,
+Free/Libre/Open-Source signal analysis software suite that supports various
+device types (such as logic analyzers, oscilloscopes, multimeters, and more).
+
+libsigrokdecode is a shared library written in C which provides the basic
+API for running sigrok protocol decoders. The protocol decoders themselves
+are written in Python.
+
+
+Status
+------
+
+libsigrokdecode is in a usable state and has had official tarball releases.
+
+While the API can change from release to release, this will always be
+properly documented and reflected in the package version number and
+in the shared library / libtool / .so-file version numbers.
+
+However, there are _NO_ guarantees at all for stable APIs in git snapshots!
+Distro packagers should only use released tarballs (no git snapshots).
+
+
+Requirements
+------------
+
+ - git
+ - gcc (>= 4.0)
+ - make
+ - autoconf >= 2.63
+ - automake >= 1.11
+ - libtool
+ - pkg-config >= 0.22
+ - libglib >= 2.28.0
+ - Python >= 3.0
+
+
+Building and installing
+-----------------------
+
+In order to get the libsigrokdecode source code and build it, run:
+
+ $ git clone git://sigrok.org/libsigrokdecode
+ $ cd libsigrokdecode
+ $ ./autogen.sh
+ $ ./configure
+ $ make
+
+For installing libsigrokdecode:
+
+ $ make install
+
+Please see the following wiki pages for more detailed instructions:
+
+ http://sigrok.org/wiki/Linux
+ http://sigrok.org/wiki/Mac_OS_X
+ http://sigrok.org/wiki/Windows
+ http://sigrok.org/wiki/FreeBSD
+
+
+Mailing lists
+-------------
+
+There are two mailing lists for sigrok/libsigrokdecode:
+
+ https://lists.sourceforge.net/lists/listinfo/sigrok-devel
+ https://lists.sourceforge.net/lists/listinfo/sigrok-commits
+
+
+IRC
+---
+
+You can find the sigrok developers in the #sigrok IRC channel on Freenode.
+
+
+Website
+-------
+
+ http://sigrok.org/wiki/Libsigrokdecode
+
